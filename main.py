@@ -3,6 +3,7 @@ import copy
 import tcod
 from tcod.libtcodpy import map_get_height
 
+import color
 from engine import Engine
 import entity_factories
 from procgen import generate_dungeon
@@ -38,6 +39,10 @@ def main() -> None:
     ) 
     
     engine.update_fov()
+
+    engine.message_log.add_message(
+        "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
+    )
 
     with tcod.context.new_terminal(
         screen_width,
