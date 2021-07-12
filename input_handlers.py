@@ -60,7 +60,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         returns true if advances a turn"""
 
         if (action is None):
-            False
+            return False
 
         try:
             action.perform()
