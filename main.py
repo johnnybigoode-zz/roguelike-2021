@@ -29,7 +29,6 @@ def main() -> None:
 
     player = copy.deepcopy(entity_factories.player)
     engine = Engine(player=player)
-
     engine.game_map = generate_dungeon(
         max_rooms= max_rooms,
         room_max_size= room_max_size,

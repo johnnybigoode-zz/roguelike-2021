@@ -1,3 +1,4 @@
+from numpy import number
 from components.ai import HostileEnemy
 from components import consumable
 from components.fighter import Fighter
@@ -43,4 +44,11 @@ lighting_scroll = Item(
     color=(255, 255, 0),
     name="Lighting Scroll",
     consumable=consumable.LightingDamageConsumable(damage=20, maximun_range=5),
+)
+
+confusion_scroll = Item(
+    char="~",
+    color=(207, 63, 255),
+    name="Confusion Scroll",
+    consumable=consumable.ConfusionConsumable(number_of_turns=10),
 )
