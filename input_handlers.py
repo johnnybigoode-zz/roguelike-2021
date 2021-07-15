@@ -117,7 +117,7 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_i:
             self.engine.event_handler = InventoryActivateHandler(self.engine)
         elif key == tcod.event.K_d:
-            self.engine.event_handler = InventoryDropHandler(self.engine)        
+            self.engine.event_handler = InventoryDropHandler(self.engine)
         elif key == tcod.event.K_SLASH:
             self.engine.event_handler = LookHandler(self.engine)
 
@@ -129,6 +129,7 @@ class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
             raise SystemExit()
+
 
 CURSOR_Y_KEYS = {
     tcod.event.K_UP: -1,
@@ -189,6 +190,7 @@ class HistoryViewer(EventHandler):
         else:  # any other key moves back to main state
             self.engine.event_handler = MainGameEventHandler(self.engine)
 
+
 class AskUserEventHandler(EventHandler):
     """handles special user input, like inventory"""
 
@@ -216,6 +218,7 @@ class AskUserEventHandler(EventHandler):
     def on_exit(self) -> Optional[Action]:
         self.engine.event_handler = MainGameEventHandler(self.engine)
         return None
+
 
 class InventoryEventHandler(AskUserEventHandler):
     TITLE = "<missing title>"
@@ -249,10 +252,10 @@ class InventoryEventHandler(AskUserEventHandler):
             bg=(0, 0, 0,)
         )
 
-        if number_of_items_in_inventory > 0 :
+        if number_of_items_in_inventory > 0:
             for i, item in enumerate(self.engine.player.inventory.items):
                 item_key = chr(ord("a") + i)
-                console.print(x + 1, y + i + 1, f"({item_key}) {item.name}" )
+                console.print(x + 1, y + i + 1, f"({item_key}) {item.name}")
         else:
             console.print(x + 1, y + 1, "(Empty)")
 
@@ -265,25 +268,29 @@ class InventoryEventHandler(AskUserEventHandler):
             try:
                 selected_item = player.inventory.items[index]
             except IndexError:
-                self.engine.message_log.add_message("Invalid entry.", color.invalid)
+                self.engine.message_log.add_message(
+                    "Invalid entry.", color.invalid)
                 return None
-            return self.on_item_selected(selected_item)            
+            return self.on_item_selected(selected_item)
         return super().ev_keydown(event)
 
     def on_item_selected(self, item: Item) -> Optional[Action]:
         raise NotImplementedError()
-    
+
+
 class InventoryActivateHandler(InventoryEventHandler):
     TITLE = "Select item to use"
 
     def on_item_selected(self, item: Item) -> Optional[Action]:
         return item.consumable.get_action(self.engine.player)
 
+
 class InventoryDropHandler(InventoryEventHandler):
     TITLE = "Select item to drop"
 
     def on_item_selected(self, item: Item) -> Optional[Action]:
         return actions.DropItem(self.engine.player, item)
+
 
 class SelectIndexHandler(AskUserEventHandler):
     def __init__(self, engine: Engine):
@@ -323,18 +330,20 @@ class SelectIndexHandler(AskUserEventHandler):
         return super().ev_keydown(event)
 
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[Action]:
-        if self.engine.game_map.in_bounds(*event.title):
+        if self.engine.game_map.in_bounds(*event.tile):
             if event.button == 1:
                 return self.on_index_selected(*event.tile)
-            
+
         return super().ev_mousebuttondown(event)
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         raise NotImplementedError()
 
+
 class LookHandler(SelectIndexHandler):
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         self.engine.event_handler = MainGameEventHandler(self.engine)
+
 
 class SingleRangedAttackHandler(SelectIndexHandler):
     def __init__(
@@ -342,6 +351,36 @@ class SingleRangedAttackHandler(SelectIndexHandler):
     ):
         super().__init__(engine)
         self.callback = callback
+
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return self.callback((x, y))
+
+
+class AreaRangedAttackHandler(SelectIndexHandler):
+    def __init__(
+        self,
+        engine: Engine,
+        radius: int,
+        callback: Callable[[Tuple[int, int]], Optional[Action]],
+    ):
+        super().__init__(engine)
+        self.radius = radius
+        self.callback = callback
+
+    def on_render(self, console: tcod.Console) -> None:
+        super().on_render(console)
+
+        x, y = self.engine.mouse_location
+
+        # show affected area
+        console.draw_frame(
+            x=x - self.radius - 1,
+            y=y - self.radius - 1,
+            width=self.radius ** 2,
+            height=self.radius ** 2,
+            fg=color.red,
+            clear=False,
+        )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return self.callback((x, y))
