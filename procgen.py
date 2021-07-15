@@ -66,8 +66,7 @@ def place_entities(
             item_chance = random.random()
 
             if (item_chance < 0.7):
-                #entity_factories.health_potions.spawn(dungeon, x, y)
-                entity_factories.fireball_scroll.spawn(dungeon, x, y)
+                entity_factories.health_potions.spawn(dungeon, x, y)
             elif (item_chance < 0.8):
                 entity_factories.fireball_scroll.spawn(dungeon, x, y)
             elif (item_chance < 0.9):
