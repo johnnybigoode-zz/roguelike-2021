@@ -7,7 +7,10 @@ from tcod.libtcodpy import map_get_height
 import color
 from engine import Engine
 import entity_factories
+import exceptions
+import input_handlers
 from procgen import generate_dungeon
+
 
 def main() -> None:
     screen_width = 80
@@ -30,21 +33,24 @@ def main() -> None:
     player = copy.deepcopy(entity_factories.player)
     engine = Engine(player=player)
     engine.game_map = generate_dungeon(
-        max_rooms= max_rooms,
-        room_max_size= room_max_size,
-        room_min_size= room_min_size,
-        map_width= map_width,
-        map_height= map_height,
+        max_rooms=max_rooms,
+        room_max_size=room_max_size,
+        room_min_size=room_min_size,
+        map_width=map_width,
+        map_height=map_height,
         max_monsters_per_room=max_monsters_per_room,
         max_items_per_room=max_items_per_room,
         engine=engine,
-    ) 
-    
+    )
+
     engine.update_fov()
 
     engine.message_log.add_message(
         "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
     )
+
+    handler: input_handlers.BaseEventHandler = input_handlers.MainGameEventHandler(
+        engine)
 
     with tcod.context.new_terminal(
         screen_width,
@@ -54,17 +60,31 @@ def main() -> None:
         vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        while True:
-            root_console.clear()
-            engine.event_handler.on_render(console=root_console)
-            context.present(root_console)
-            try:
-                for event in tcod.event.wait():
-                    context.convert_event(event)
-                    engine.event_handler.handle_events(event)
-            except Exception:
-                traceback.print_exc()
-                engine.message_log.add_message(traceback.format_exc(), color.error)
+        try:
+            while True:
+                root_console.clear()
+                engine.event_handler.on_render(console=root_console)
+                context.present(root_console)
+
+                try:
+                    for event in tcod.event.wait():
+                        context.convert_event(event)
+                        engine.event_handler.handle_events(event)
+                except Exception:
+                    traceback.print_exc()
+                    if isinstance(handler, input_handlers.EventHandler):
+                        handler.engine.message_log.add_message(
+                            traceback.format_exc(), color.error
+                        )
+        except exceptions.QuitWithoutSaving:
+            raise
+        except SystemExit:
+            # todo add save funcition here
+            raise
+        except BaseException:
+            # todo add save here too
+            raise
+
 
 if __name__ == "__main__":
     main()
