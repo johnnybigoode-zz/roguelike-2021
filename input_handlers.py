@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
+import os
+
 import tcod
 from tcod.event_constants import K_PAGEDOWN
 
@@ -175,9 +177,18 @@ class MainGameEventHandler(EventHandler):
 
 
 class GameOverEventHandler(EventHandler):
+    def on_quit(self) -> None:
+        """Handle exiting out of a finished game."""
+        if os.path.exists("savegame.sav"):
+             os.remove("savegame.sav")  # Deletes the active save file.
+        raise exceptions.QuitWithoutSaving()  # Avoid saving a finished game.
+
+    def ev_quit(self, event: tcod.event.Quit) -> None:
+         self.on_quit()
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
-        if event.sym == tcod.event.K_ESCAPE:
-            raise SystemExit()
+         if event.sym == tcod.event.K_ESCAPE:
+                self.on_quit()
 
 
 CURSOR_Y_KEYS = {
