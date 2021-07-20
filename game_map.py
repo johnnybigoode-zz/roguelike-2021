@@ -27,6 +27,8 @@ class GameMap:
             (width, height), fill_value=False, order="F"
         ) #tiles that have been seen
 
+        self.downstairs_location = (0, 0)
+
     @property
     def gamemap(self) -> GameMap:
         return self
