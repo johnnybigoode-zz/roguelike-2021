@@ -116,10 +116,12 @@ class EventHandler(BaseEventHandler):
            return action_or_state
        if self.handle_action(action_or_state):
            # A valid action was performed.
-           if not self.engine.player.is_alive:
+            if not self.engine.player.is_alive:
                # The player was killed sometime during or after the action.
-               return GameOverEventHandler(self.engine)
-           return MainGameEventHandler(self.engine)  # Return to the main handler.
+                return GameOverEventHandler(self.engine)
+            elif self.engine.player.level.requires_level_up:
+                return LevelUpEventHandler(self.engine)
+            return MainGameEventHandler(self.engine)  # Return to the main handler.
        return self
 
     def handle_action(self, action: Optional[Action]) -> bool:
@@ -283,6 +285,71 @@ class AskUserEventHandler(EventHandler):
 
     def on_exit(self) -> Optional[ActionOrHandler]:
         return MainGameEventHandler(self.engine)
+
+class LevelUpEventHandler(AskUserEventHandler):
+    TITLE = "Level Up!"
+
+    def on_render(self, console: tcod.Console) -> None:
+        super().on_render(console)
+
+        if self.engine.player.x <= 30:
+            x = 40
+        else:
+            x = 0
+
+        console.draw_frame(
+            x=x,
+            y=0,
+            width=35,
+            height=8,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+        console.print(x=x + 1, y=1, string="Congratulations! You level up!")
+        console.print(x=x + 1, y=2, string="Select an attribute to increase:")
+
+        console.print(
+            x=x + 1,
+            y=5,
+            string=f"A.) Strenght (+1 Attack, from {self.engine.player.fighter.max_hp})",
+        )
+
+        console.print(
+            x=x + 1,
+            y=6,
+            string=f"A.) Agility (+1 Defense, from {self.engine.player.fighter.power})",
+        )
+
+        console.print(
+            x=x + 1,
+            y=4,
+            string=f"A.) Constitution (+20 HP, from {self.engine.player.fighter.defense})",
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        player = self.engine.player
+        key = event.sym
+        index = key - tcod.event.K_a
+
+        if 0 <= index <= 2:
+            if index == 0:
+                player.level.increase_max_hp()
+            if index == 1:
+                player.level.increase_power()
+            if index == 2:
+                player.level.increase_defense()
+        else:
+            self.engine.message_log.add_message("Invalid entry", color.invalid)
+
+            return None
+
+        return super.ev_keydown(event)
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        return None
 
 
 class InventoryEventHandler(AskUserEventHandler):
