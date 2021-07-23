@@ -313,20 +313,20 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         console.print(
             x=x + 1,
-            y=5,
+            y=4,
             string=f"A.) Strenght (+1 Attack, from {self.engine.player.fighter.max_hp})",
         )
 
         console.print(
             x=x + 1,
-            y=6,
-            string=f"A.) Agility (+1 Defense, from {self.engine.player.fighter.power})",
+            y=5,
+            string=f"B.) Agility (+1 Defense, from {self.engine.player.fighter.power})",
         )
 
         console.print(
             x=x + 1,
-            y=4,
-            string=f"A.) Constitution (+20 HP, from {self.engine.player.fighter.defense})",
+            y=6,
+            string=f"C.) Constitution (+20 HP, from {self.engine.player.fighter.defense})",
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -336,7 +336,7 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         if 0 <= index <= 2:
             if index == 0:
-                player.level.increase_max_hp()
+                player.level.increase_max_hp(20)
             if index == 1:
                 player.level.increase_power()
             if index == 2:
@@ -346,7 +346,7 @@ class LevelUpEventHandler(AskUserEventHandler):
 
             return None
 
-        return super.ev_keydown(event)
+        return super().ev_keydown(event)
 
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
         return None
