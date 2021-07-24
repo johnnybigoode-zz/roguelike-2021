@@ -72,7 +72,8 @@ class ItemAction(Action):
 
     def perform(self) -> None:
         """invoke the iteams hability"""
-        self.item.consumable.activate(self)
+        if self.item.consumable:
+            self.item.consumable.activate(self)
 
 
 class DropItem(Action):
