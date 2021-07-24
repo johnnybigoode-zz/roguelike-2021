@@ -35,7 +35,7 @@ troll = Actor(
     level=Level(xp_given=35),
 )
 
-health_potions = Item(
+health_potion = Item(
     char="!",
     color=(127, 0, 255),
     name="Health Potion",
