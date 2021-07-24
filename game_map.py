@@ -121,7 +121,7 @@ class GameWorld:
    def generate_floor(self) -> None:
        from procgen import generate_dungeon
 
-       self.current_floor = 1
+       self.current_floor += 1
 
        self.engine.game_map = generate_dungeon(
            max_rooms=self.max_rooms,
