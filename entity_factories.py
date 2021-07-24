@@ -1,6 +1,7 @@
+from components.equippable import Equippable
 from numpy import number
 from components.ai import HostileEnemy
-from components import consumable
+from components import consumable, equippable
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -62,3 +63,32 @@ fireball_scroll = Item(
     name="Fireball Scroll",
     consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
 )
+
+dagger = Item( 
+    char="/",
+    color=(0, 191, 255),
+    name="Dagger",
+    equippable=equippable.Dagger()
+)
+
+sword = Item( 
+    char="|",
+    color=(0, 191, 255),
+    name="Sword",
+    equippable=equippable.Sword()
+)
+
+leather_armor = Item(
+    char="[",
+    color=(139, 69, 19),
+    name="Leather Armor",
+    equippable=equippable.LeatherArmor()
+)
+
+chain_mail = Item(
+    char="]",
+    color=(139, 69, 19),
+    name="Chain Mail",
+    equippable=equippable.ChainMail()
+)
+
