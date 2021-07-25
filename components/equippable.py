@@ -13,7 +13,6 @@ class Equippable(BaseComponent):
 
     def __init__(
         self, 
-        parent: Item, 
         equipment_type: EquipmentType, 
         power_bonus: int = 0, 
         defense_bonus: int = 0
@@ -37,7 +36,7 @@ class Sword(Equippable):
             power_bonus = 4,
         )
 
-class LeatheArmo(Equippable):
+class LeatheArmor(Equippable):
     def __init__(self):
         super().__init__(
             equipment_type = EquipmentType.ARMOR,

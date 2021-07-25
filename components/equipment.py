@@ -31,6 +31,19 @@ class Equipment(BaseComponent):
 
         return bonus
 
+
+    @property
+    def power_bonus(self) -> int:
+        bonus = 0
+
+        if self.weapon is not None and self.weapon.equippable is not None:
+            bonus += self.weapon.equippable.power_bonus
+
+        if self.armor is not None and self.armor.equippable is not None:
+            bonus += self.armor.equippable.power_bonus
+
+        return bonus
+
     def item_is_equippable(self, item: Item) -> bool:
         return self.weapon == item or self.armor == item
 
@@ -47,7 +60,7 @@ class Equipment(BaseComponent):
     def equip_to_slot(self, slot: str, item: Item, add_message: bool) -> None:
         current_item = getattr(self, slot)
 
-        if current_item is None:
+        if current_item is not None:
             self.unequip_from_slot(slot, add_message)
 
         setattr(self, slot, item)
