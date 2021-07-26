@@ -166,7 +166,7 @@ class MainGameEventHandler(EventHandler):
             dx, dy = MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
         elif key in WAIT_KEYS:
-            action = WaitAction(player, dx, dy)
+            action = WaitAction(player, 0, 0)
         elif key == tcod.event.K_ESCAPE:
             raise SystemExit()
         elif key == tcod.event.K_v:
