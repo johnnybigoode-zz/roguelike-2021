@@ -1,2 +1,8 @@
-tcod>=11.13
-numpy>=1.18
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+docstr-coverage=2.1.1
+numpy=1.21.0
+sphinx=4.1.1
+sphinx-rtd-theme=0.5.2
+tcod=12.7.1
