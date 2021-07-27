@@ -1,3 +1,9 @@
+"""
+This defines the colors used by the system. 
+Currently it has some weird info as we have colors defined by their names. 
+And colors define by their function. 
+"""
+
 white = (0xFF, 0xFF, 0xFF)
 black = (0x0, 0x0, 0x0)
 red = (0xFF, 0x0, 0x0)

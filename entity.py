@@ -18,8 +18,27 @@ if(TYPE_CHECKING):
 T = TypeVar("T", bound="Entity")
 
 class Entity:
-    """
-    A generic object to represent players, enemies, items, etc.
+    """This is a thing that exists in our gameworld
+    Using the Entity Component System model, an entity should be data
+    Behavior should not be part of the entity itself, but rather be
+    a component that is part of the entity defined by :class:`BaseComponent`
+
+    :param parent: Whose gamemap this entity is on
+    :type parent: GameMap, Optional
+    :param x: x coordinate of the entity
+    :type x: int
+    :param y: y coordinate of the entity
+    :type y: int
+    :param char:  Character to represent the entity
+    :type str: str
+    :param color: Color of the entity
+    :type color: Tuple[int, int, int]
+    :param name: Name of the entity
+    :type name: str
+    :param blocks_movement: If entity blocks movement
+    :type blocks_movement: bool
+    :param render_order: What order to render the entity
+    :type render_order: RenderOrder
     """
     parent: Union[GameMap, Inventory]
 
