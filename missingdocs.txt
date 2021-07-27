@@ -1,0 +1,306 @@
+(base) PS Z:\projetos\roguelike-2021> docstr-coverage . > missingdocs.txt
+
+File: "Z:\projetos\roguelike-2021\actions.py"
+ - No module docstring
+ - No docstring for `Action`
+ - No docstring for `Action.__init__`
+ - No docstring for `PickupAction`
+ - No docstring for `PickupAction.__init__`
+ - No docstring for `PickupAction.perform`
+ - No docstring for `ItemAction`
+ - No docstring for `ItemAction.__init__`
+ - No docstring for `DropItem`
+ - No docstring for `DropItem.perform`
+ - No docstring for `EquipAction`
+ - No docstring for `EquipAction.__init__`
+ - No docstring for `EquipAction.perform`
+ - No docstring for `WaitAction`
+ - No docstring for `WaitAction.perform`
+ - No docstring for `TakeStairsAction`
+ - No docstring for `TakeStairsAction.perform`
+ - No docstring for `ActionWithDirection`
+ - No docstring for `ActionWithDirection.__init__`
+ - No docstring for `ActionWithDirection.perform`
+ - No docstring for `MeleeAction`
+ - No docstring for `MeleeAction.perform`
+ - No docstring for `BumpAction`
+ - No docstring for `BumpAction.perform`
+ - No docstring for `MovementAction`
+ - No docstring for `MovementAction.perform`
+ Needed: 33; Found: 7; Missing: 26; Coverage: 21.2%
+
+
+File: "Z:\projetos\roguelike-2021\components\ai.py"
+ - No module docstring
+ - No docstring for `BaseAI`
+ - No docstring for `BaseAI.perform`
+ - No docstring for `HostileEnemy`
+ - No docstring for `HostileEnemy.__init__`
+ - No docstring for `HostileEnemy.perform`
+ - No docstring for `ConfusedEnemy`
+ - No docstring for `ConfusedEnemy.__init__`
+ - No docstring for `ConfusedEnemy.perform`
+ Needed: 10; Found: 1; Missing: 9; Coverage: 10.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\base_component.py"
+ - No module docstring
+ - No docstring for `BaseComponent`
+ - No docstring for `BaseComponent.gamemap`
+ - No docstring for `BaseComponent.engine`
+ Needed: 4; Found: 0; Missing: 4; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\consumable.py"
+ - No module docstring
+ - No docstring for `Consumable`
+ - No docstring for `Consumable.consume`
+ - No docstring for `ConfusionConsumable`
+ - No docstring for `ConfusionConsumable.__init__`
+ - No docstring for `ConfusionConsumable.get_action`
+ - No docstring for `ConfusionConsumable.activate`
+ - No docstring for `HealingConsumable`
+ - No docstring for `HealingConsumable.__init__`
+ - No docstring for `HealingConsumable.activate`
+ - No docstring for `LightingDamageConsumable`
+ - No docstring for `LightingDamageConsumable.__init__`
+ - No docstring for `LightingDamageConsumable.activate`
+ - No docstring for `FireballDamageConsumable`
+ - No docstring for `FireballDamageConsumable.__init__`
+ - No docstring for `FireballDamageConsumable.get_action`
+ - No docstring for `FireballDamageConsumable.activate`
+ Needed: 19; Found: 2; Missing: 17; Coverage: 10.5%
+
+
+File: "Z:\projetos\roguelike-2021\components\equipment.py"
+ - No module docstring
+ - No docstring for `Equipment`
+ - No docstring for `Equipment.__init__`
+ - No docstring for `Equipment.defense_bonus`
+ - No docstring for `Equipment.power_bonus`
+ - No docstring for `Equipment.item_is_equippable`
+ - No docstring for `Equipment.unequip_message`
+ - No docstring for `Equipment.equip_message`
+ - No docstring for `Equipment.equip_to_slot`
+ - No docstring for `Equipment.unequip_from_slot`
+ - No docstring for `Equipment.toggle_equip`
+ Needed: 11; Found: 0; Missing: 11; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\equippable.py"
+ - No module docstring
+ - No docstring for `Equippable`
+ - No docstring for `Equippable.__init__`
+ - No docstring for `Dagger`
+ - No docstring for `Dagger.__init__`
+ - No docstring for `Sword`
+ - No docstring for `Sword.__init__`
+ - No docstring for `LeatheArmor`
+ - No docstring for `LeatheArmor.__init__`
+ - No docstring for `ChainMail`
+ - No docstring for `ChainMail.__init__`
+ Needed: 11; Found: 0; Missing: 11; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\fighter.py"
+ - No module docstring
+ - No docstring for `Fighter`
+ - No docstring for `Fighter.__init__`
+ - No docstring for `Fighter.hp`
+ - No docstring for `Fighter.hp`
+ - No docstring for `Fighter.defense`
+ - No docstring for `Fighter.power`
+ - No docstring for `Fighter.defense_bonus`
+ - No docstring for `Fighter.power_bonus`
+ - No docstring for `Fighter.heal`
+ - No docstring for `Fighter.take_damage`
+ - No docstring for `Fighter.die`
+ Needed: 12; Found: 0; Missing: 12; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\inventory.py"
+ - No module docstring
+ - No docstring for `Inventory`
+ - No docstring for `Inventory.__init__`
+ - No docstring for `Inventory.drop`
+ Needed: 4; Found: 0; Missing: 4; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\components\level.py"
+ - No module docstring
+ - No docstring for `Level`
+ - No docstring for `Level.__init__`
+ - No docstring for `Level.experience_to_next_level`
+ - No docstring for `Level.requires_level_up`
+ - No docstring for `Level.add_xp`
+ - No docstring for `Level.increase_level`
+ - No docstring for `Level.increase_max_hp`
+ - No docstring for `Level.increase_power`
+ - No docstring for `Level.increase_defense`
+ Needed: 10; Found: 0; Missing: 10; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\docs\source\conf.py"
+ - No module docstring
+ Needed: 1; Found: 0; Missing: 1; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\engine.py"
+ - No module docstring
+ - No docstring for `Engine`
+ - No docstring for `Engine.__init__`
+ - No docstring for `Engine.handle_enemy_turns`
+ - No docstring for `Engine.update_fov`
+ - No docstring for `Engine.render`
+ Needed: 7; Found: 1; Missing: 6; Coverage: 14.3%
+
+
+File: "Z:\projetos\roguelike-2021\entity.py"
+ - No module docstring
+ - No docstring for `Entity.__init__`
+ - No docstring for `Entity.gamemap`
+ - No docstring for `Entity.distance`
+ - No docstring for `Entity.move`
+ - No docstring for `Actor`
+ - No docstring for `Actor.__init__`
+ - No docstring for `Actor.is_alive`
+ - No docstring for `Item`
+ - No docstring for `Item.__init__`
+ Needed: 13; Found: 3; Missing: 10; Coverage: 23.1%
+
+
+File: "Z:\projetos\roguelike-2021\entity_factories.py"
+ - No module docstring
+ Needed: 1; Found: 0; Missing: 1; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\equipment_types.py"
+ - No module docstring
+ - No docstring for `EquipmentType`
+ Needed: 2; Found: 0; Missing: 2; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\exceptions.py"
+ - No module docstring
+ Needed: 3; Found: 2; Missing: 1; Coverage: 66.7%
+
+
+File: "Z:\projetos\roguelike-2021\game_map.py"
+ - No module docstring
+ - No docstring for `GameMap`
+ - No docstring for `GameMap.__init__`
+ - No docstring for `GameMap.gamemap`
+ - No docstring for `GameMap.actors`
+ - No docstring for `GameMap.items`
+ - No docstring for `GameMap.get_blocking_entity_at_location`
+ - No docstring for `GameMap.get_actor_at_location`
+ - No docstring for `GameWorld.__init__`
+ - No docstring for `GameWorld.generate_floor`
+ Needed: 13; Found: 3; Missing: 10; Coverage: 23.1%
+
+
+File: "Z:\projetos\roguelike-2021\input_handlers.py"
+ - No module docstring
+ - No docstring for `BaseEventHandler`
+ - No docstring for `BaseEventHandler.on_render`
+ - No docstring for `BaseEventHandler.ev_quit`
+ - No docstring for `PopupMessage.__init__`
+ - No docstring for `EventHandler`
+ - No docstring for `EventHandler.__init__`
+ - No docstring for `EventHandler.ev_mousemotion`
+ - No docstring for `EventHandler.on_render`
+ - No docstring for `MainGameEventHandler`
+ - No docstring for `MainGameEventHandler.ev_keydown`
+ - No docstring for `GameOverEventHandler`
+ - No docstring for `GameOverEventHandler.ev_quit`
+ - No docstring for `GameOverEventHandler.ev_keydown`
+ - No docstring for `HistoryViewer.__init__`
+ - No docstring for `HistoryViewer.on_render`
+ - No docstring for `HistoryViewer.ev_keydown`
+ - No docstring for `AskUserEventHandler.on_exit`
+ - No docstring for `CharacterScreenEventHandler`
+ - No docstring for `CharacterScreenEventHandler.on_render`
+ - No docstring for `LevelUpEventHandler`
+ - No docstring for `LevelUpEventHandler.on_render`
+ - No docstring for `LevelUpEventHandler.ev_keydown`
+ - No docstring for `LevelUpEventHandler.ev_mousebuttondown`
+ - No docstring for `InventoryEventHandler`
+ - No docstring for `InventoryEventHandler.on_render`
+ - No docstring for `InventoryEventHandler.ev_keydown`
+ - No docstring for `InventoryEventHandler.on_item_selected`
+ - No docstring for `InventoryActivateHandler`
+ - No docstring for `InventoryActivateHandler.on_item_selected`
+ - No docstring for `InventoryDropHandler`
+ - No docstring for `InventoryDropHandler.on_item_selected`
+ - No docstring for `SelectIndexHandler`
+ - No docstring for `SelectIndexHandler.__init__`
+ - No docstring for `SelectIndexHandler.on_render`
+ - No docstring for `SelectIndexHandler.ev_keydown`
+ - No docstring for `SelectIndexHandler.ev_mousebuttondown`
+ - No docstring for `SelectIndexHandler.on_index_selected`
+ - No docstring for `LookHandler`
+ - No docstring for `LookHandler.on_index_selected`
+ - No docstring for `SingleRangedAttackHandler`
+ - No docstring for `SingleRangedAttackHandler.__init__`
+ - No docstring for `SingleRangedAttackHandler.on_index_selected`
+ - No docstring for `AreaRangedAttackHandler`
+ - No docstring for `AreaRangedAttackHandler.__init__`
+ - No docstring for `AreaRangedAttackHandler.on_render`
+ - No docstring for `AreaRangedAttackHandler.on_index_selected`
+ Needed: 58; Found: 11; Missing: 47; Coverage: 19.0%
+
+
+File: "Z:\projetos\roguelike-2021\main.py"
+ - No module docstring
+ - No docstring for `main`
+ Needed: 3; Found: 1; Missing: 2; Coverage: 33.3%
+
+
+File: "Z:\projetos\roguelike-2021\message_log.py"
+ - No module docstring
+ - No docstring for `Message`
+ - No docstring for `Message.__init__`
+ - No docstring for `MessageLog`
+ - No docstring for `MessageLog.__init__`
+ Needed: 10; Found: 5; Missing: 5; Coverage: 50.0%
+
+
+File: "Z:\projetos\roguelike-2021\procgen.py"
+ - No module docstring
+ - No docstring for `get_max_value_for_floor`
+ - No docstring for `get_entities_at_random`
+ - No docstring for `RectangularRoom`
+ - No docstring for `RectangularRoom.__init__`
+ - No docstring for `RectangularRoom.center`
+ - No docstring for `place_entities`
+ Needed: 11; Found: 4; Missing: 7; Coverage: 36.4%
+
+
+File: "Z:\projetos\roguelike-2021\render_functions.py"
+ - No module docstring
+ - No docstring for `get_names_at_location`
+ - No docstring for `render_bar`
+ - No docstring for `render_dungeon_level`
+ - No docstring for `render_names_at_mouse_location`
+ Needed: 5; Found: 0; Missing: 5; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\render_order.py"
+ - No module docstring
+ - No docstring for `RenderOrder`
+ Needed: 2; Found: 0; Missing: 2; Coverage: 0.0%
+
+
+File: "Z:\projetos\roguelike-2021\setup_game.py"
+ - No docstring for `MainMenu.ev_keydown`
+ Needed: 6; Found: 5; Missing: 1; Coverage: 83.3%
+
+
+File: "Z:\projetos\roguelike-2021\tile_types.py"
+ - No module docstring
+ Needed: 2; Found: 1; Missing: 1; Coverage: 50.0%
+
+
+Overall statistics for 26 files:
+Needed: 259  -  Found: 53  -  Missing: 206
+Total coverage: 20.5%  -  Grade: Extremely poor
