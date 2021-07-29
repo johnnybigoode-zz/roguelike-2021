@@ -13,9 +13,10 @@ from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
+from tcod.tileset import CHARMAP_CP437
 
 player = Actor(
-    char="@",
+    char=chr(0x2666),
     color=(255, 255, 255),
     name="Player",
     ai_cls=HostileEnemy,
