@@ -1,7 +1,11 @@
+"""
+Module will define exceptions for the baserl module.
+"""
 class Impossible(Exception):
-    """exception raised when something impossible to be performed
-    
-    the reason is given as the exception message"""
+    """
+    Exception raised when something impossible to be performed
+    The reason is given as the exception message
+    """
 
 class QuitWithoutSaving(SystemExit):
    """Can be raised to exit the game without automatically saving."""

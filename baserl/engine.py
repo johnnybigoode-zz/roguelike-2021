@@ -1,3 +1,7 @@
+"""
+Module for our engine
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -17,15 +21,25 @@ if TYPE_CHECKING:
     from game_map import GameMap, GameWorld
 
 class Engine:
+    """Our main class for the game engine"""
     game_map: GameMap
     game_world: GameWorld
 
     def __init__(self, player: Actor):
+        """
+        Constructor for Engine
+
+        :param player: The player's actor
+        :type player: Actor
+        """
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
         
     def handle_enemy_turns(self) -> None:
+        """
+        Handles enemy turns
+        """
         for entity in set(self.game_map.actors) - {self.player}:
             if entity.ai:
                 try:
@@ -34,6 +48,10 @@ class Engine:
                     pass
 
     def update_fov(self) -> None:
+        """
+        Updates the field of view for the player
+
+        """
         self.game_map.visible[:] = compute_fov(
             self.game_map.tiles["transparent"],
             (self.player.x, self.player.y),
@@ -43,6 +61,12 @@ class Engine:
         self.game_map.explored |= self.game_map.visible
 
     def render(self, console: Console) -> None:
+        """
+        Renders the game
+
+        :param console: Console to render to
+        :type console: Console
+        """
         self.game_map.render(console)
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 

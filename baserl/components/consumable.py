@@ -1,3 +1,6 @@
+"""
+Class for consumable component
+"""
 from __future__ import annotations
 from engine import Engine
 
@@ -16,19 +19,28 @@ if TYPE_CHECKING:
 
 
 class Consumable(BaseComponent):
+    """
+    Mais class for consumable component
+    """
     parent: Item
 
-    def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:
-        """try to return the actions for this"""
+    def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:        
+        """Return the action for behavior"""
         return actions.ItemAction(consumer, self.parent)
 
     def activate(self, action: actions.ItemAction) -> None:
-        """invoke this items ability
+        """
+        Invoke this items ability
         `action` is the context for this activations
+        Must be implemented by a consumable item
         """
         raise NotImplementedError
 
     def consume(self) -> None:
+        """
+        Invoes this items consume behavior
+        Probably remove from iventory is its parent is inventory
+        """
         entity = self.parent
         inventory = entity.parent
         if isinstance(inventory, components.inventory.Inventory):
@@ -36,19 +48,45 @@ class Consumable(BaseComponent):
 
 
 class ConfusionConsumable(Consumable):
+    """
+    Class for causing confusion behavior
+    """
     def __init__(self, number_of_turns: int):
+        """Constructor
+
+        :param number_of_turns: Number of turns which confusion will last
+        :type number_of_turns: int
+        """
         self.number_of_turns = number_of_turns
 
     def get_action(self, consumer: Actor) -> SingleRangedAttackHandler:
+        """
+        We will return a SingleRangeAttackHandler with the callback function for the effect
+
+        :param consumer: Actor that will consume this item, might inflict its effects to another target
+        :type consumer: Actor
+        :return: 
+        :rtype: SingleRangedAttackHandler
+        """
         self.engine.message_log.add_message(
             "Select a target location.", color.needs_target
         )
         return SingleRangedAttackHandler(
             self.engine,
-            callback=lambda xy: actions.ItemAction(consumer, self.parent, xy),
+            callback = lambda xy: actions.ItemAction(consumer, self.parent, xy),
         )
 
     def activate(self, action: actions.ItemAction) -> None:
+        """
+        The actual behavior switch when we consume this consumable
+
+        :param action: action context for this activation
+        :type action: actions.ItemAction
+        :raises Impossible: Can't cast outside of the field of view
+        :raises Impossible: Target is not an enemy
+        :raises Impossible: Cannot target yourself
+        """
+
         consumer = action.entity
         target = action.target_actor
 
@@ -71,10 +109,26 @@ class ConfusionConsumable(Consumable):
 
 
 class HealingConsumable(Consumable):
+    """
+    Class for healing consumable behavior
+    """
     def __init__(self, amount: int):
+        """
+        Constructor
+        
+        :param amount: amount of HP the consumable will recover
+        :type amount: int
+        """
         self.amount = amount
 
     def activate(self, action: actions.ItemAction) -> None:
+        """
+        Activation of consumable
+
+        :param action: Action context for this activation
+        :type action: actions.ItemAction
+        :raises Impossible: Can't heal if health is full
+        """
         consumer = action.entity
         amount_recovered = consumer.fighter.heal(self.amount)
 
@@ -89,11 +143,30 @@ class HealingConsumable(Consumable):
 
 
 class LightingDamageConsumable(Consumable):
+    """
+    Class for lighting damage consumable behavior
+    """
     def __init__(self, damage: int, maximun_range: int):
+        """
+        Constructor
+
+        :param damage: Amount of damage that will be cause
+        :type damage: int
+        :param maximun_range: Maximum range of the attack
+        :type maximun_range: int
+        """
         self.damage = damage
         self.maximun_range = maximun_range
 
     def activate(self, action: actions.ItemAction) -> None:
+        """
+        Activation of lighting damage consumable
+        Will find nearest enemy and damage it
+
+        :param action: Action context for this activation
+        :type action: actions.ItemAction
+        :raises Impossible: Can't use if there's no close enemy
+        """
         consumer = action.entity
         target = None
         closest_distance = self.maximun_range + 1.0
@@ -117,11 +190,30 @@ class LightingDamageConsumable(Consumable):
 
 
 class FireballDamageConsumable(Consumable):
+    """
+    Class for fireball damage consumable behavior
+    """
+
     def __init__(self, damage: int, radius: int):
+        """
+        Constructor
+        
+        :param damage: Damaged caused by fireball
+        :type damage: int
+        :param radius: Radius of circle of effect of fireball
+        :type radius: int
+        """
         self.damage = damage
         self.radius = radius
 
     def get_action(self, consumer: Actor) -> AreaRangedAttackHandler:
+        """Handles the area selection for spell
+
+        :param consumer: Who will execute the spell
+        :type consumer: Actor
+        :return: 
+        :rtype: AreaRangedAttackHandler
+        """
         self.engine.message_log.add_message(
             "Select a target location.", color.needs_target
         )
@@ -132,6 +224,15 @@ class FireballDamageConsumable(Consumable):
         )
 
     def activate(self, action: actions.ItemAction) -> None:
+        """
+        The damage to location 
+        Will cause the same damage to all enemies in the circle defined by the radius
+
+        :param action: Action context for this activation
+        :type action: actions.ItemAction
+        :raises Impossible: Cannot target area you cannot see
+        :raises Impossible: Nothing to target
+        """
         target_xy = action.target_xy
 
         if not self.engine.game_map.visible[target_xy]:

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+The code entry
+"""
 import traceback
 import tcod
 from tcod.libtcodpy import map_get_height
@@ -9,12 +12,13 @@ import input_handlers
 import setup_game
 
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
-   """If the current event handler has an active Enagine then save it."""
-   if isinstance(handler, input_handlers.EventHandler):
-       handler.engine.save_as(filename)
-       print("Game saved.")
+    """If the current event handler has an active Enagine then save it."""
+    if isinstance(handler, input_handlers.EventHandler):
+        handler.engine.save_as(filename)
+        print("Game saved.")
 
 def main() -> None:
+    """The fat main function"""
     screen_width = 80
     screen_height = 50
 
@@ -59,4 +63,7 @@ def main() -> None:
             raise
 
 if __name__ == "__main__":
+    """
+    Well
+    """
     main()

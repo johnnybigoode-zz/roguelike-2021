@@ -1,3 +1,7 @@
+"""
+Module for tile types in our dungeon
+"""
+
 from typing import Tuple
 
 import numpy as np # type: ignore

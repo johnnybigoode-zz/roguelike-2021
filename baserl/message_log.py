@@ -1,3 +1,6 @@
+"""
+Message logger module
+"""
 from typing import Iterable, List, Reversible, Tuple
 import textwrap
 
@@ -7,7 +10,18 @@ import color
 
 
 class Message:
+    """
+    Message class
+    """
     def __init__(self, text: str, fg: Tuple[int, int, int]):
+        """
+        Constructor
+
+        :param text: Message text
+        :type text: str
+        :param fg: Message color
+        :type fg: Tuple[int, int, int]
+        """
         self.plain_text = text
         self.fg = fg
         self.count = 1
@@ -21,7 +35,13 @@ class Message:
 
 
 class MessageLog:
+    """
+    Defines a render function that renders the messages onto the console
+    """
     def __init__(self) -> None:
+        """
+        Constructor, creates a List of Message objects
+        """
         self.messages: List[Message] = []
 
     def add_message(

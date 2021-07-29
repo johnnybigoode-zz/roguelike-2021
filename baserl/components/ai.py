@@ -1,3 +1,6 @@
+"""
+AI Module
+"""
 from __future__ import annotations
 
 import random
@@ -12,14 +15,27 @@ if TYPE_CHECKING:
     from entity import Actor
 
 class BaseAI(Action):
+    """Base AI for all entities that would need an AI
+    At the start of the tutorial it was a BaseComponent subclass too
+    http://rogueliketutorials.com/tutorials/tcod/v2/part-8/
+
+    :param Action: The BaseAI Needs to be a subclass of Action because it needs behavior?
+    :type Action: Action
+    """
     entity: Actor
 
     def perform(self) -> None:
+        """
+        What this Actor should do when it is enemy turn
+        Needs to implement or else
+        :raises NotImplementedError:
+        """
         raise NotImplementedError()
 
     def get_path_to(self, dest_x: int, dest_y: int) -> List[Tuple[int, int]]:
-        """compute and return a path to target position
-        if there is no valid path, return empty list
+        """
+        Compute and return a path to target position
+        If there is no valid path, returns an empty list
         """
 
         #copy the walkable array
@@ -46,11 +62,23 @@ class BaseAI(Action):
         return [(index[0], index[1]) for index in path]
 
 class HostileEnemy(BaseAI):
+    """
+    Implementation of BaseAI
+    """
+
     def __init__(self, entity: Actor):
-        super().__init__(entity)
+        """Constructor
+
+        :param entity: The entity, but actually Actor that this behavior is attached to
+        :type entity: Actor
+        """
+        super().__init__(entity)        
         self.path: List[Tuple[int, int]] =[]
 
     def perform(self) -> None:
+        """
+        Searchs for the player and moves towards their position
+        """
         target = self.engine.player
         dx = target.x - self.entity.x
         dy = target.y - self.entity.y
@@ -71,15 +99,31 @@ class HostileEnemy(BaseAI):
         return WaitAction(self.entity).perform()
 
 class ConfusedEnemy(BaseAI):
+    """
+    Behavior when a AI is confused
+    """
     def __init__(
         self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int
     ):
+        """
+        Constructor
+
+        :param entity: Actor which is confused
+        :type entity: Actor
+        :param previous_ai: Previous AI of the entity
+        :type previous_ai: Optional[BaseAI]
+        :param turns_remaining: Turns remaining before the AI is no longer confused and resumes previous AI
+        :type turns_remaining: int
+        """
         super().__init__(entity)
 
         self.previous_ai = previous_ai
         self.turns_remaining = turns_remaining
 
     def perform(self) -> None:
+        """
+        If player is confused, take a random walk towards any tile around
+        """
         if self.turns_remaining <= 0:
             self.engine.message_log.add_message(
                 f"The {self.entity.name} is no longer confused."

@@ -1,3 +1,6 @@
+"""
+Module for procedural generation
+"""
 from __future__ import annotations
 
 import random
@@ -41,6 +44,16 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
 def get_max_value_for_floor(
     weighted_chances_by_floor: List[Tuple[int, int]], floor: int
 ) -> int:
+    """
+    Based on the floor, return the maximum value for the weighted chances
+
+    :param weighted_chances_by_floor: List of Tuples of (Entity, Weight)
+    :type weighted_chances_by_floor: List[Tuple[int, int]]
+    :param floor: Floor which we are generating the map for
+    :type floor: int
+    :return: Maximum value for the floor
+    :rtype: int
+    """
     current_value = 0
 
     for floor_minimum  , value in weighted_chances_by_floor:
@@ -56,6 +69,19 @@ def get_entities_at_random(
     number_of_entities: int,
     floor: int,
 ) -> List[Entity]:
+    """
+    Get a list of entities at random
+    This doesn't render or spawns the entities
+
+    :param weighted_chances_by_floor: Chances of entities by floor
+    :type weighted_chances_by_floor: Dict[int, List[Tuple[Entity, int]]]
+    :param number_of_entities: Total of entities to generate
+    :type number_of_entities: int
+    :param floor: Floor level
+    :type floor: int
+    :return: List of entities that were generated
+    :rtype: List[Entity]
+    """
     entity_weighted_chances = {}
 
     for key, values in weighted_chances_by_floor.items():
@@ -77,7 +103,21 @@ def get_entities_at_random(
     return chosen_entities
 
 class RectangularRoom:
+    """
+    Class for a retangular room
+    """
     def __init__(self, x: int, y: int, width: int, height: int):
+        """Room Parameters
+
+        :param x: Bottom left x coordinate
+        :type x: int
+        :param y: Bottom left y coordinate
+        :type y: int
+        :param width: Room's width as in x-axis extension
+        :type width: int
+        :param height: Room's heigth as in y-axis extension
+        :type height: int
+        """
         self.x1 = x
         self.y1 = y
         self.x2 = x + width
@@ -85,6 +125,13 @@ class RectangularRoom:
 
     @property
     def center(self) -> Tuple[int, int]:
+        """
+        Get's the center of the room which is the middle of the x and y coordinates
+
+        :return: X, Y coordinates of the center
+        :rtype: Tuple[int, int]
+        """
+
         center_x = int((self.x1 + self.x2) / 2)
         center_y = int((self.y1 + self.y2) / 2)
 
@@ -92,11 +139,25 @@ class RectangularRoom:
 
     @property
     def inner(self) -> Tuple[slice, slice]:
-        """return the inner area of this room as a 2d array index"""
+        """
+        Return the inner area of this room as a 2d array index
+
+        :return: Not exactly sure
+        :rtype: Tuple[slice, slice]
+        """
         return slice(self.x1 + 1, self.x2), slice(self.y1 + 1, self.y2)
 
     def intersects(self, other: RectangularRoom) -> bool:
-        """returns true if this room intersects with other room"""
+        """
+        Returns true if this room intersects with other room
+
+
+        :param other: Room to check against
+        :type other: RectangularRoom
+        :return: True if the rooms intersect, False if otherwise
+        :rtype: bool
+        """
+        
         return (
             self.x1 <= other.x2
             and self.x2 >= other.x1
@@ -108,6 +169,17 @@ class RectangularRoom:
 def place_entities(
     room: RectangularRoom, dungeon: GameMap, floor_number: int
 ) -> None:
+    """
+    Generates entities and place them in the room using their spawn methods
+
+    :param room: Room to calculate the entities for AND to spawn them in
+    :type room: RectangularRoom
+    :param dungeon: Game map that the room is in
+    :type dungeon: GameMap
+    :param floor_number: Floor number we are generating for
+    :type floor_number: int
+    """
+    
 
     number_of_monsters = random.randint(
         0, get_max_value_for_floor(max_monsters_by_floor, floor_number)
@@ -132,7 +204,17 @@ def place_entities(
 
 
 def tunnel_between(start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
-    """return an L shaped tunnel between these two points"""
+    """
+    Generates a L shapped tunnel between two points
+
+    :param start: Start x,y coordinate
+    :type start: Tuple[int, int]
+    :param end: End x,y coordinate
+    :type end: Tuple[int, int]
+    :yield: Returns a tuple of x,y coordinates that is the tunnel
+    :rtype: Iterator[Tuple[int, int]
+    """
+
     x1, y1 = start
     x2, y2 = end
     if (random.random() < 0.5):  # 50% change
@@ -157,7 +239,24 @@ def generate_dungeon(
     map_height: int,
     engine: Engine,
 ) -> GameMap:
-    """generate a new dungeon map"""
+    """
+    Generates a dungeon map
+
+    :param max_rooms: Maximum of rooms for the dungeon
+    :type max_rooms: int
+    :param room_min_size: Minimum size of the rooms
+    :type room_min_size: int
+    :param room_max_size: Maximum size of the rooms
+    :type room_max_size: int
+    :param map_width: Width of the map, as in x-axis
+    :type map_width: int
+    :param map_height: Height of the map, as in y-axis
+    :type map_height: int
+    :param engine: Engine that will run the gamemap
+    :type engine: Engine
+    :return: The dungeon map with entities placed in it
+    :rtype: GameMap
+    """
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 

@@ -1,3 +1,6 @@
+"""
+This module will handle all the input from the user.
+"""
 from __future__ import annotations
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 
@@ -20,6 +23,7 @@ import exceptions
 if TYPE_CHECKING:
     from engine import Engine
     from entity import Item
+
 
 MOVE_KEYS = {
     # arrows keys
@@ -65,68 +69,125 @@ CONFIRM_KEYS = {
 ActionOrHandler = Union[Action, "BaseEventHandler"]
 
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
-   def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
-       """Handle an event and return the next active event handler."""
-       state = self.dispatch(event)
-       if isinstance(state, BaseEventHandler):
-           return state
-       assert not isinstance(state, Action), f"{self!r} can not handle actions."
-       return self
+    """
+    Base event handler that will be used to handle tcod's events
+    tcod's event are a light-weight implementation of event handling built on calls to SDL
+    https://python-tcod.readthedocs.io/en/latest/tcod/event.html
 
-   def on_render(self, console: tcod.Console) -> None:
-       raise NotImplementedError()
+    :param tcod: An EventDispatch with a ActionOrHandler
+    :type tcod: tcod.event.EventDispatch[ActionOrHandler]
+    """
+    def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
+        """
+        Handle an event and return the next active event handler
+        
+        :param event: Event to be handled
+        :type event: tcod.event.Event
+        :return: Next active event handler
+        :rtype: BaseEventHandler
+        """
+        state = self.dispatch(event)
+        if isinstance(state, BaseEventHandler):
+            return state
+        assert not isinstance(state, Action), f"{self!r} can not handle actions."
+        return self
 
-   def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-       raise SystemExit()
+    def on_render(self, console: tcod.Console) -> None:
+        """
+        Should be implmemented by other events.
+
+        :param console: Console to render on
+        :type console: tcod.Console
+        :raises NotImplementedError: Self descriptive no?
+        """
+        raise NotImplementedError()
+
+    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
+        """Quits the game"""
+        raise SystemExit()
 
 class PopupMessage(BaseEventHandler):
-   """Display a popup text window."""
+    """
+    Display a popup text window.
+    """
 
-   def __init__(self, parent_handler: BaseEventHandler, text: str):
-       self.parent = parent_handler
-       self.text = text
+    def __init__(self, parent_handler: BaseEventHandler, text: str):
+        """
+        Constructor
 
-   def on_render(self, console: tcod.Console) -> None:
-       """Render the parent and dim the result, then print the message on top."""
-       self.parent.on_render(console)
-       console.tiles_rgb["fg"] //= 8
-       console.tiles_rgb["bg"] //= 8
+        :param parent_handler: Parent event handler
+        :type parent_handler: BaseEventHandler
+        :param text: Text to render
+        :type text: str
+        """
+        self.parent = parent_handler
+        self.text = text
 
-       console.print(
-           console.width // 2,
-           console.height // 2,
-           self.text,
-           fg=color.white,
-           bg=color.black,
-           alignment=tcod.CENTER,
-       )
+    def on_render(self, console: tcod.Console) -> None:
+        """Render the parent and dim the result, then print the message on top.
 
-   def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
-       """Any key returns to the parent handler."""
-       return self.parent
+        :param console: Console to be rendered on
+        :type console: tcod.Console
+        """
+        self.parent.on_render(console)
+        console.tiles_rgb["fg"] //= 8
+        console.tiles_rgb["bg"] //= 8
+
+        console.print(
+            console.width // 2,
+            console.height // 2,
+            self.text,
+            fg=color.white,
+            bg=color.black,
+            alignment=tcod.CENTER,
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        """Any key returns to the parent handler."""
+        return self.parent
 
 class EventHandler(BaseEventHandler):
+    """Will handle all events."""
+
     def __init__(self, engine: Engine):
+        """Constructor
+
+        :param engine: Which engine will use this handler
+        :type engine: Engine
+        """
         self.engine = engine
 
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
-       """Handle events for input handlers with an engine."""
-       action_or_state = self.dispatch(event)
-       if isinstance(action_or_state, BaseEventHandler):
-           return action_or_state
-       if self.handle_action(action_or_state):
-           # A valid action was performed.
-            if not self.engine.player.is_alive:
-               # The player was killed sometime during or after the action.
-                return GameOverEventHandler(self.engine)
-            elif self.engine.player.level.requires_level_up:
-                return LevelUpEventHandler(self.engine)
-            return MainGameEventHandler(self.engine)  # Return to the main handler.
-       return self
+        """Handle the events
+
+        :param event: Event to be handled
+        :type event: tcod.event.Event
+        :return: The event handler that should handle this event
+        :rtype: BaseEventHandler
+        """
+        action_or_state = self.dispatch(event)
+        if isinstance(action_or_state, BaseEventHandler):
+            return action_or_state
+        if self.handle_action(action_or_state):
+            # A valid action was performed.
+                if not self.engine.player.is_alive:
+                # The player was killed sometime during or after the action.
+                    return GameOverEventHandler(self.engine)
+                elif self.engine.player.level.requires_level_up:
+                    return LevelUpEventHandler(self.engine)
+                return MainGameEventHandler(self.engine)  # Return to the main handler.
+        return self
 
     def handle_action(self, action: Optional[Action]) -> bool:
-        """handles actions return from event methods
-        returns true if advances a turn"""
+        """
+        Handles actions
+        Returns true if advances a turn
+
+        :param action: Action to be performed
+        :type action: Optional[Action]
+        :return: Bool for turn advance
+        :rtype: bool
+        """
 
         if (action is None):
             return False
@@ -142,15 +203,43 @@ class EventHandler(BaseEventHandler):
         return True
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
+        """Handles mouse motion
+
+        :param event: tcod specific MouseMotion event
+        :type event: tcod.event.MouseMotion
+        """
         if (self.engine.game_map.in_bounds(event.tile.x, event.tile.y)):
             self.engine.mouse_location = event.tile.x, event.tile.y
 
     def on_render(self, console: tcod.Console) -> Optional[Action]:
+        """
+        Render method 
+
+        :param console: Console to be rendered on
+        :type console: tcod.Console
+        :return: No return tho
+        :rtype: Optional[Action]
+        """
         self.engine.render(console)
 
 
 class MainGameEventHandler(EventHandler):
+    """
+    Handles the main game loop.
+
+    :param EventHandler: Parent class
+    :type EventHandler: EventHandler
+    """
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        """
+        Key down event handler
+
+        :param event: tcod event KeyDown to be handled
+        :type event: tcod.event.KeyDown
+        :raises SystemExit: In case user presses ESC to quit
+        :return: If no action was performed, return Action. Otherwise return the appropriate handler
+        :rtype: Optional[ActionOrHandler]
+        """
         action: Optional[Action] = None
 
         key = event.sym
@@ -187,18 +276,39 @@ class MainGameEventHandler(EventHandler):
 
 
 class GameOverEventHandler(EventHandler):
+    """
+    Handles GameOver 
+
+    :param EventHandler: Parent class
+    :type EventHandler: EventHandler
+    """
     def on_quit(self) -> None:
-        """Handle exiting out of a finished game."""
+        """
+        Handle exiting out of a finished game.
+        If game not saved, avoids quitting without saving.
+
+        :raises exceptions.QuitWithoutSaving:
+        """
         if os.path.exists("savegame.sav"):
              os.remove("savegame.sav")  # Deletes the active save file.
         raise exceptions.QuitWithoutSaving()  # Avoid saving a finished game.
 
     def ev_quit(self, event: tcod.event.Quit) -> None:
-         self.on_quit()
+        """Quits
+
+        :param event: tcod event Quit to be handled
+        :type event: tcod.event.Quit
+        """
+        self.on_quit()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
-         if event.sym == tcod.event.K_ESCAPE:
-                self.on_quit()
+        """Handles the ESC key to quit
+
+        :param event: The event to quit
+        :type event: tcod.event.KeyDown
+        """
+        if event.sym == tcod.event.K_ESCAPE:
+            self.on_quit()
 
 
 CURSOR_Y_KEYS = {
@@ -210,14 +320,30 @@ CURSOR_Y_KEYS = {
 
 
 class HistoryViewer(EventHandler):
-    """print history on a larger window that can be navigated"""
+    """
+    Class to print history on a larger window that can be navigated
+
+    :param EventHandler: Parent's class
+    :type EventHandler: [type]
+    """
 
     def __init__(self, engine: Engine):
+        """Constructor
+
+        :param engine: Engine to render the history
+        :type engine: Engine
+        """
         super().__init__(engine)
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Renders the history viewer
+
+        :param console: Console to render on
+        :type console: tcod.Console
+        """
         super().on_render(console)  # draw mainstate
 
         log_console = tcod.Console(console.width - 6, console.height - 6)
@@ -240,6 +366,14 @@ class HistoryViewer(EventHandler):
         log_console.blit(console, 3, 3)
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[MainGameEventHandler]:
+        """
+        Special ev_keydown handler for the history viewer
+
+        :param event: if key down when History Viewer is active, handle the key
+        :type event: tcod.event.KeyDown
+        :return: Returns main event handler if any non key for viewer is pressed or none
+        :rtype: Optional[MainGameEventHandler]
+        """
         # fancy conditional movement to make it feel right
         if (event.sym in CURSOR_Y_KEYS):
             adjust = CURSOR_Y_KEYS[event.sym]
@@ -264,10 +398,23 @@ class HistoryViewer(EventHandler):
 
 
 class AskUserEventHandler(EventHandler):
-    """handles special user input, like inventory"""
+    """
+    Handles special user input, like inventory
+    Shouldn't History Viewer be a child of this?
+
+    :param EventHandler: Parent Class
+    :type EventHandler: EventHandler
+    """
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        """By default any key exits this input handler."""
+        """
+        By default any key exits this input handler
+
+        :param event: Key down event
+        :type event: tcod.event.KeyDown
+        :return: Returns none or self.on_exit, which is MainEventHandler
+        :rtype: Optional[ActionOrHandler]
+        """
         if event.sym in {  # Ignore modifier keys.
             tcod.event.K_LSHIFT,
             tcod.event.K_RSHIFT,
@@ -282,16 +429,39 @@ class AskUserEventHandler(EventHandler):
     def ev_mousebuttondown(
           self, event: tcod.event.MouseButtonDown
      ) -> Optional[ActionOrHandler]:
-        """By default any mouse click exits this input handler."""
+        """
+        By default, mouse click will exit this handler
+
+        :param event: Mouse button down event
+        :type event: tcod.event.MouseButtonDown
+        :return: Returns self.on_exit, which is MainEventHandler
+        :rtype: Optional[ActionOrHandler]
+        """
         return self.on_exit()
 
     def on_exit(self) -> Optional[ActionOrHandler]:
+        """
+        Just returns the maingame event handler
+
+        :return: MainGameEventHandler
+        :rtype: Optional[ActionOrHandler]
+        """
         return MainGameEventHandler(self.engine)
 
 class CharacterScreenEventHandler(AskUserEventHandler):
+    """
+    Class for Character information screen
+    """
     TITLE = "Character Information"
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Char Screen render, 
+        Will render parent, before rendering over. 
+        
+        :param console: Console to be printed on
+        :type console: tcod.Console
+        """
         super().on_render(console)
 
         if self.engine.player.x <= 30:
@@ -334,9 +504,21 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
 class LevelUpEventHandler(AskUserEventHandler):
+    """
+    Handler for Level Up event
+
+    :param AskUserEventHandler: Parent Class
+    :type AskUserEventHandler: AskUserEventHandler
+    """
     TITLE = "Level Up!"
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Render parent then renders over
+
+        :param console: Console to render on
+        :type console: tcod.Console
+        """
         super().on_render(console)
 
         if self.engine.player.x <= 30:
@@ -377,6 +559,16 @@ class LevelUpEventHandler(AskUserEventHandler):
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        """
+        Level up key down event handler.
+        Will accept keys related to options presented to player
+        If invalid, just adds a log message and stays on the same screen
+
+        :param event: Key down event
+        :type event: tcod.event.KeyDown
+        :return: Should return super().ev_keydown(event) eventually
+        :rtype: Optional[ActionOrHandler]
+        """
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
@@ -396,13 +588,29 @@ class LevelUpEventHandler(AskUserEventHandler):
         return super().ev_keydown(event)
 
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        """
+        Does nothing if mouse button is pressed. 
+        Default behavior would exit the current handler
+        """
         return None
 
 
 class InventoryEventHandler(AskUserEventHandler):
+    """
+    Class to handle user inventory
+
+    :param AskUserEventHandler: Parent Class
+    :type AskUserEventHandler: AskUserEventHandler
+    """
     TITLE = "<missing title>"
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Renders super then renders over it
+
+        :param console: Console to render on
+        :type console: tcod.Console
+        """
         super().on_render(console)
         number_of_items_in_inventory = len(self.engine.player.inventory.items)
 
@@ -443,6 +651,15 @@ class InventoryEventHandler(AskUserEventHandler):
             console.print(x + 1, y + 1, "(Empty)")
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        """
+        Key down handler for inventory
+        Takes any key from keyboard to pick from iventory
+
+        :param event: Key down event
+        :type event: tcod.event.KeyDown
+        :return: Eventually returns super ev keydown 
+        :rtype: Optional[ActionOrHandler]
+        """
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
@@ -458,42 +675,99 @@ class InventoryEventHandler(AskUserEventHandler):
         return super().ev_keydown(event)
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
+        """
+        Should be implemented by child class
+        """
         raise NotImplementedError()
 
 
 class InventoryActivateHandler(InventoryEventHandler):
+    """
+    Class to handle inventory activation
+
+    :param InventoryEventHandler: Parent Class
+    :type InventoryEventHandler: IventoryEventHandler
+    """
     TITLE = "Select item to use"
 
     def on_item_selected(self, item: Item) -> Optional[Action]:
-       if item.consumable:
-           # Return the action for the selected item.
-           return item.consumable.get_action(self.engine.player)
-       elif item.equippable:
-           return actions.EquipAction(self.engine.player, item)
-       else:
-           return None
+        """[summary]
+
+        :param item: Selected Item
+        :type item: Item
+        :return: Returns action to be performed or None if no component found
+        :rtype: Optional[Action]
+        """
+        if item.consumable:
+            # Return the action for the selected item.
+            return item.consumable.get_action(self.engine.player)
+        elif item.equippable:
+            return actions.EquipAction(self.engine.player, item)
+        else:
+            return None
 
 
 class InventoryDropHandler(InventoryEventHandler):
+    """
+    Handles dropping item from iventory
+
+    :param InventoryEventHandler: Parent Class
+    :type InventoryEventHandler: IventoryEventHandler
+    """
     TITLE = "Select item to drop"
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
+        """
+        Handles dropping item from inventory
+
+        :param item: Item to be dropped
+        :type item: Item
+        :return: actions.DropItem()
+        :rtype: Optional[ActionOrHandler]
+        """
         return actions.DropItem(self.engine.player, item)
 
 
 class SelectIndexHandler(AskUserEventHandler):
+    """
+    Handler when you need to select a coordinate on the map
+
+    :param AskUserEventHandler: Parent Class
+    :type AskUserEventHandler: AskUserEventHandler
+    """
     def __init__(self, engine: Engine):
+        """
+        Constructor
+
+        :param engine: Engine which player is in
+        :type engine: Engine
+        """
         super().__init__(engine)
         player = self.engine.player
         engine.mouse_location = player.x, player.y
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Render super then 
+        Will take mouse information and render over
+
+        :param console: Console to render on
+        :type console: tcod.Console
+        """
         super().on_render(console)
         x, y = self.engine.mouse_location
         console.tiles_rgb["bg"][x, y] = color.white
         console.tiles_rgb["fg"][x, y] = color.black
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        """
+        Key down event handler for Select index handler
+
+        :param event: Key down event
+        :type event: tcod.event.KeyDown
+        :return: super().ev_keydown
+        :rtype: Optional[ActionOrHandler]
+        """
         key = event.sym
         if (key in MOVE_KEYS):
             modifier = 1
@@ -519,6 +793,14 @@ class SelectIndexHandler(AskUserEventHandler):
         return super().ev_keydown(event)
 
     def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[ActionOrHandler]:
+        """
+        Handles mouse click when selecting index
+
+        :param event: The Mouse Click event
+        :type event: tcod.event.MouseButtonDown
+        :return: returns super with mousebutton or on_index_selected
+        :rtype: Optional[ActionOrHandler]
+        """
         if self.engine.game_map.in_bounds(*event.tile):
             if event.button == 1:
                 return self.on_index_selected(*event.tile)
@@ -526,37 +808,95 @@ class SelectIndexHandler(AskUserEventHandler):
         return super().ev_mousebuttondown(event)
 
     def on_index_selected(self, x: int, y: int) -> Optional[ActionOrHandler]:
+        """
+        This method is called when the user selects an index
+        It should be implemented in the child class
+
+        :param x: x coordinate of selected index
+        :type x: int
+        :param y: y coordinate selected index
+        :type y: int
+        :raises NotImplementedError: Somebody forgot to implement this
+        :return: Might return an action or a handler
+        :rtype: Optional[ActionOrHandler]
+        """
         raise NotImplementedError()
 
 
 class LookHandler(SelectIndexHandler):
+    """
+    Will simply return the game to MainGameEventHandler
+
+    :param SelectIndexHandler: Parent Class
+    :type SelectIndexHandler: SelectIndexHandler
+    """
     def on_index_selected(self, x: int, y: int) -> MainGameEventHandler:
+        """Returns to main, passes no information
+        """
         return MainGameEventHandler(self.engine)
 
 
 class SingleRangedAttackHandler(SelectIndexHandler):
+    """
+    Handles ranged single target attack
+
+    """
     def __init__(
         self, engine: Engine, callback: Callable[[Tuple[int, int]], Optional[Action]]
     ):
+        """
+        Constructor
+
+        :param engine: Engine the player is in
+        :type engine: Engine
+        :param callback: Function to call when location has been picked
+        :type callback: Callable[[Tuple[int, int]], Optional[Action]]
+        """
         super().__init__(engine)
         self.callback = callback
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        """
+        When index is selected, passes information to call back function
+
+        :param x: x coordinate of selected
+        :type x: int
+        :param y: y coordinate of selected
+        :type y: int
+        :return: returns an optional action
+        :rtype: Optional[Action]
+        """
         return self.callback((x, y))
 
 
 class AreaRangedAttackHandler(SelectIndexHandler):
+    """
+    Handles an area target attack
+    """
     def __init__(
         self,
         engine: Engine,
         radius: int,
         callback: Callable[[Tuple[int, int]], Optional[Action]],
     ):
+        """
+        Constructor
+
+        :param engine: Engine player is in
+        :type engine: Engine
+        :param radius: Radius of area to target
+        :type radius: int
+        :param callback: Function to call when location has been picked
+        :type callback: Callable[[Tuple[int, int]], Optional[Action]]
+        """
         super().__init__(engine)
         self.radius = radius
         self.callback = callback
 
     def on_render(self, console: tcod.Console) -> None:
+        """
+        Renders affected area over super.on_render
+        """
         super().on_render(console)
 
         x, y = self.engine.mouse_location
@@ -572,4 +912,14 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        """
+        Calls back function with selected coordinate
+
+        :param x: x coordinate
+        :type x: int
+        :param y: y coordinate
+        :type y: int
+        :return: ?
+        :rtype: Optional[Action]
+        """
         return self.callback((x, y))

@@ -1,7 +1,8 @@
 """
 This defines the colors used by the system. 
-Currently it has some weird info as we have colors defined by their names. 
-And colors define by their function. 
+Colors can defined by their names as in red or white or 
+by their function as in 'player_die', 'bar_empty' or
+both like 'menu_text'. 
 """
 
 white = (0xFF, 0xFF, 0xFF)

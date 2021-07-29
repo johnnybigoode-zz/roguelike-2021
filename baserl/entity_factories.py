@@ -1,3 +1,9 @@
+"""
+Factory method pattern for creation of entities.
+https://en.wikipedia.org/wiki/Factory_method_pattern
+This is the part that can be abstracted into xml files, json files, etc.
+"""
+
 from components.equippable import Equippable
 from numpy import number
 from components.ai import HostileEnemy
