@@ -2,6 +2,7 @@
 Factory method pattern for creation of entities.
 https://en.wikipedia.org/wiki/Factory_method_pattern
 This is the part that can be abstracted into xml files, json files, etc.
+Characters are from https://python-tcod.readthedocs.io/en/latest/tcod/charmap-reference.html#code-page-437
 """
 
 from components.equippable import Equippable
